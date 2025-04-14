@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Server Building Map - Navigation Night</title>
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.12.0/mapbox-gl.js"></script>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.12.0/mapbox-gl.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/phosphor-icons@1.4.2/src/css/phosphor.css" />
+  <style>
+    body { margin: 0; padding: 0; }
+    #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+
+    #info-panel {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+      width: 320px;
+      background: #1a1a1a;
+      color: #f0f0f0;
+      padding: 20px;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      overflow-y: auto;
+      font-family: sans-serif;
+      z-index: 1;
+    }
+
+    #info-panel.active {
+      transform: translateX(0);
+    }
+
+    #info-panel img {
+      width: 100%;
+      border-radius: 12px;
+      margin-bottom: 10px;
+    }
+
+    #info-panel h2 {
+      margin-top: 0;
+      color: #00ffff;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .stat {
+      background: #2a2a2a;
+      border-radius: 8px;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .stat i {
+      font-size: 18px;
+      color: #00ffff;
+    }
+
+    #cloud-box {
+      position: absolute;
+      pointer-events: none;
+      transform: translate(-50%, -100%);
+      z-index: 2;
+    }
+
+    .signal {
+      display: flex;
+      align-items: flex-end;
+      gap: 2px;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 4px 6px;
+      border-radius: 6px;
+      box-shadow: 0 0 6px rgba(0,255,255,0.4);
+    }
+
+    .bar {
+      width: 4px;
+      background: #00ffff;
+      border-radius: 1px;
+      animation: pulse 2s infinite;
+    }
+
+    .bar-1 { height: 4px; animation-delay: 0s; }
+    .bar-2 { height: 8px; animation-delay: 0.1s; }
+    .bar-3 { height: 12px; animation-delay: 0.2s; }
+    .bar-4 { height: 16px; animation-delay: 0.3s; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; transform: scaleY(0.8); }
+      50% { opacity: 1; transform: scaleY(1); }
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <div id="info-panel"></div>
+  <div id="cloud-box">
+    <div class="signal">
+      <div class="bar bar-1"></div>
+      <div class="bar bar-2"></div>
+      <div class="bar bar-3"></div>
+      <div class="bar bar-4"></div>
+    </div>
+  </div>
+
+  <script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoibTFraG92IiwiYSI6ImNsdHJ0YXRndzA0MW8ya3BqbW5wczhreDIifQ.ei_9aLxbL60G-4SjFp79jg';
+
+    const map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/navigation-night-v1',
+      center: [-6.2723, 53.3566],
+      zoom: 15,
+      pitch: 60,
+      bearing: -17.6,
+      antialias: true
+    });
+
+    const broadstoneGeoJSON = {
+      'type': 'FeatureCollection',
+      'generator': 'overpass-turbo',
+      'copyright': 'The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.',
+      'timestamp': '2025-04-14T16:48:06Z',
+      'features': [
+        {
+          'type': 'Feature',
+          'properties': {
+            '@id': 'way/137331211',
+            'addr:city': 'Dublin',
+            'addr:street': 'Broadstone',
+            'building': 'garage',
+            'name': 'Broadstone Bus Garage (Bus Éireann)',
+            'height': 40,
+            'os': 'Windows Server 2019',
+            'cpu': '42%',
+            'memory': '72%',
+            'status': 'Healthy',
+            'best_practices': JSON.stringify([
+              'Monitor disk I/O daily',
+              'Windows Updates weekly',
+              'RAID health check monthly'
+            ])
+          },
+          'geometry': {
+            'type': 'Polygon',
+            'coordinates': [
+              [
+                [
+                  -6.2747881,
+                  53.3557167
+                ],
+                [
+                  -6.2748609,
+                  53.3556964
+                ],
+                [
+                  -6.2748942,
+                  53.355739
+                ],
+                [
+                  -6.2755905,
+                  53.355545
+                ],
+                [
+                  -6.2749114,
+                  53.354677
+                ],
+                [
+                  -6.2747558,
+                  53.3544781
+                ],
+                [
+                  -6.2746166,
+                  53.3545192
+                ],
+                [
+                  -6.2745249,
+                  53.354402
+                ],
+                [
+                  -6.2740111,
+                  53.3545444
+                ],
+                [
+                  -6.2741051,
+                  53.3546647
+                ],
+                [
+                  -6.273863,
+                  53.3547322
+                ],
+                [
+                  -6.2744053,
+                  53.3554253
+                ],
+                [
+                  -6.2745324,
+                  53.3553899
+                ],
+                [
+                  -6.2747881,
+                  53.3557167
+                ]
+              ]
+            ]
+          },
+          'id': 'way/137331211'
+        }
+      ]
+    };
+
+    map.on('load', () => {
+      // Base buildings (from Mapbox)
+      map.addLayer({
+        id: '3d-buildings',
+        source: 'composite',
+        'source-layer': 'building',
+        filter: ['==', 'extrude', 'true'],
+        type: 'fill-extrusion',
+        minzoom: 15,
+        paint: {
+          'fill-extrusion-color': '#444',
+          'fill-extrusion-height': ['get', 'height'],
+          'fill-extrusion-base': ['get', 'min_height'],
+          'fill-extrusion-opacity': 0.4,
+          'fill-extrusion-vertical-gradient': true
+        }
+      });
+
+      // Highlighted enterprise buildings (slightly brighter)
+      map.addSource('enterprise-buildings', {
+        type: 'geojson',
+        data: broadstoneGeoJSON
+      });
+
+      map.addLayer({
+        id: 'enterprise-highlight',
+        type: 'fill-extrusion',
+        source: 'enterprise-buildings',
+        paint: {
+          'fill-extrusion-color': '#00ffff',
+          'fill-extrusion-height': ['get', 'height'],
+          'fill-extrusion-base': 0,
+          'fill-extrusion-opacity': 0.7,
+          'fill-extrusion-vertical-gradient': true
+        }
+      });
+
+      // Position the cloud box above the building
+      const cloudBox = document.getElementById('cloud-box');
+      const anchorLngLat = [-6.2744, 53.3552]; // approximate centroid of your polygon
+
+      function updateCloudPosition() {
+        const point = map.project(anchorLngLat);
+        cloudBox.style.left = `${point.x}px`;
+        cloudBox.style.top = `${point.y}px`;
+      }
+
+      map.on('move', updateCloudPosition);
+      map.on('resize', updateCloudPosition);
+      map.on('rotate', updateCloudPosition);
+      map.on('pitch', updateCloudPosition);
+      map.on('zoom', updateCloudPosition);
+
+      updateCloudPosition(); // run once at load
+
+      // Add interactivity
+      map.on('click', 'enterprise-highlight', (e) => {
+        const feature = e.features[0];
+        const props = feature.properties;
+
+        const panel = document.getElementById('info-panel');
+        panel.innerHTML = `
+          <img src="https://via.placeholder.com/320x180?text=Depot+Image" alt="Depot Image" />
+          <h2>${props.name}</h2>
+          <p style="font-size: 13px; color: #ccc;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed luctus.</p>
+
+          <div class="stat-grid">
+            <div class="stat"><i class="ph ph-desktop"></i> Servers: 12</div>
+            <div class="stat"><i class="ph ph-bug"></i> Vulnerabilities: 5</div>
+            <div class="stat"><i class="ph ph-globe-hemisphere-west"></i> Networks: 3</div>
+            <div class="stat"><i class="ph ph-cpu"></i> Systems: 8</div>
+            <div class="stat"><i class="ph ph-shield-check"></i> Compliance: 16</div>
+            <div class="stat"><i class="ph ph-device-mobile"></i> Devices: 24</div>
+            <div class="stat"><i class="ph ph-bus"></i> DT: 2</div>
+            <div class="stat"><i class="ph ph-users-three"></i> Users: 42</div>
+          </div>
+        `;
+        panel.classList.add('active');
+      });
+
+      // Optional: Close panel when clicking outside
+      map.on('click', (e) => {
+        const features = map.queryRenderedFeatures(e.point, { layers: ['enterprise-highlight'] });
+        if (!features.length) {
+          document.getElementById('info-panel').classList.remove('active');
+        }
+      });
+
+      map.on('mouseenter', 'enterprise-highlight', () => {
+        map.getCanvas().style.cursor = 'pointer';
+      });
+      map.on('mouseleave', 'enterprise-highlight', () => {
+        map.getCanvas().style.cursor = '';
+      });
+    });
+  </script>
+</body>
+</html>
